@@ -1,26 +1,59 @@
-import { GoogleGenAI } from '@google/genai';
-import { NextResponse } from 'next/server';
+import { GoogleGenAI } from "@google/genai";
+import { NextResponse } from "next/server";
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const sanitize = (str: string) => str.replace(/[<>]/g, "").trim().slice(0, 100);
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { source, destination, startDate, endDate, budget, travelerType, vibe, pace, transport } = body;
+    const {
+      source,
+      destination,
+      startDate,
+      endDate,
+      budget,
+      travelerType,
+      vibe,
+      pace,
+      transport,
+    } = body;
 
-    if (!source || !destination || !startDate || !endDate || !budget || !travelerType || !vibe || !pace || !transport) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (
+      !source ||
+      !destination ||
+      !startDate ||
+      !endDate ||
+      !budget ||
+      !travelerType ||
+      !vibe ||
+      !pace ||
+      !transport
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
+
+    const safeSource = sanitize(source);
+    const safeDestination = sanitize(destination);
 
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+    const days = Math.max(
+      1,
+      Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1,
+    );
 
     const prompt = `
       You are a premium, expert travel planner building a production-grade itinerary. 
       Create a highly detailed, day-by-day itinerary and cost breakdown for the following trip:
-      - From: ${source}
-      - To: ${destination}
+      - From: ${safeSource}
+      - To: ${safeDestination}
       - Dates: ${startDate} to ${endDate} (${days} days)
       - Traveler Type: ${travelerType}
       - Budget: ₹${budget} INR
@@ -93,27 +126,34 @@ export async function POST(req: Request) {
       - If the destination is international from the source, only provide flight estimates.
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-      }
-    });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Request timeout")), 25000),
+    );
+
+    const response = (await Promise.race([
+      ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+        },
+      }),
+      timeoutPromise,
+    ])) as any;
 
     const resultText = response.text;
     if (!resultText) {
-       throw new Error("No response text from Gemini");
+      throw new Error("No response text from Gemini");
     }
 
     const data = JSON.parse(resultText);
 
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error('Error generating trip plan:', error);
+    console.error("Error generating trip plan:", error);
     return NextResponse.json(
-      { error: 'Failed to generate trip plan', details: error.message },
-      { status: 500 }
+      { error: "Failed to generate trip plan", details: error.message },
+      { status: 500 },
     );
   }
 }
