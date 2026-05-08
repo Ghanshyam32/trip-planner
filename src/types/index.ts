@@ -1,12 +1,17 @@
 export interface Activity {
-  time: string;
+  time: string; // "Morning", "Afternoon", "Evening"
+  name: string;
   description: string;
+  estimatedCostINR: number;
+  duration: string;
+  proTip: string;
 }
 
 export interface DayItinerary {
   day: number;
   theme: string;
   activities: Activity[];
+  localSecret: string;
 }
 
 export interface CostBreakdown {
@@ -26,7 +31,10 @@ export interface TripPlan {
 export interface TripRequest {
   source: string;
   destination: string;
-  days: number;
+  startDate: string;
+  endDate: string;
   budget: number;
+  travelerType: string;
   vibe: string;
+  pace: string;
 }

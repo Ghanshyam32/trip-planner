@@ -14,6 +14,7 @@ export default function Home() {
   const generatePlan = async (request: TripRequest) => {
     setIsLoading(true);
     setError(null);
+    setPlan(null); // Clear previous plan when generating a new one
     try {
       const response = await fetch('/api/plan', {
         method: 'POST',
@@ -27,7 +28,6 @@ export default function Home() {
 
       const data = await response.json();
       
-      // Validation to check if we actually got a plan back
       if (!data.itinerary || !data.costBreakdown) {
          throw new Error("Invalid response format from Gemini");
       }
@@ -60,26 +60,34 @@ export default function Home() {
         </div>
       )}
 
-      {!plan ? (
+      {!plan && !isLoading ? (
         <TripForm onSubmit={generatePlan} isLoading={isLoading} />
       ) : (
         <div className="animate-fade-in">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <h2 style={{ margin: 0 }}>Your Custom Journey is Ready</h2>
-            <button onClick={resetPlan} className="btn-secondary">
-              ← Edit Preferences / Re-plan
-            </button>
-          </div>
+          {plan && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <h2 style={{ margin: 0 }}>Your Custom Journey is Ready</h2>
+              <button onClick={resetPlan} className="btn-secondary">
+                ← Edit Preferences / Re-plan
+              </button>
+            </div>
+          )}
           
           <div className="grid" style={{ gridTemplateColumns: '1fr', gap: '2rem' }}>
-            {/* The cost breakdown can sit at the top or side. Let's make a 2-column layout on large screens */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                 <div style={{ gridColumn: '1 / -1' }}>
-                    <CostBreakdown costs={plan.costBreakdown} />
-                 </div>
-              </div>
-              <ItineraryDisplay plan={plan} />
+              
+              {/* Cost breakdown shows only when plan is loaded */}
+              {plan && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                      <CostBreakdown costs={plan.costBreakdown} />
+                  </div>
+                </div>
+              )}
+
+              {/* Itinerary Display handles its own loading skeleton */}
+              <ItineraryDisplay plan={plan} isLoading={isLoading} />
+              
             </div>
           </div>
         </div>
