@@ -7,11 +7,23 @@ export interface Activity {
   proTip: string;
 }
 
+export interface HotelRanges {
+  budget: string;
+  midRange: string;
+  luxury: string;
+}
+
 export interface DayItinerary {
   day: number;
   theme: string;
   activities: Activity[];
   localSecret: string;
+  hotelRanges: HotelRanges;
+}
+
+export interface TransportEstimates {
+  flight?: string;
+  trainBus?: string;
 }
 
 export interface CostBreakdown {
@@ -20,6 +32,7 @@ export interface CostBreakdown {
   food: number;
   activities: number;
   totalEstimated: number;
+  transportEstimates: TransportEstimates;
 }
 
 export interface TripPlan {
@@ -37,4 +50,13 @@ export interface TripRequest {
   travelerType: string;
   vibe: string;
   pace: string;
+  transport: string;
+}
+
+export interface SimilarTrip {
+  type: string; // "Stretch your budget" | "Similar vibe"
+  title: string;
+  destination: string;
+  description: string;
+  budget: number;
 }

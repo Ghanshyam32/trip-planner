@@ -1,15 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg-color: #050505;
-  --panel-bg: rgba(20, 20, 20, 0.7);
-  --panel-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
+  /* LIGHT THEME VARIABLES */
+  --bg-color: #fdfdfc;
+  --panel-bg: rgba(255, 255, 255, 0.9);
+  --panel-border: rgba(0, 0, 0, 0.05);
+  --text-primary: #1a1a1a;
+  --text-secondary: #5a5a5a;
   
   --accent-color: #8a2be2;
   --accent-gradient: linear-gradient(135deg, #8a2be2 0%, #ff007f 100%);
-  --accent-glow: rgba(138, 43, 226, 0.4);
+  --accent-glow: rgba(138, 43, 226, 0.15);
 
   --font-family: 'Outfit', sans-serif;
   
@@ -35,8 +36,8 @@ body {
   overflow-x: hidden;
   line-height: 1.6;
   background-image: 
-    radial-gradient(circle at 15% 50%, rgba(138, 43, 226, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(255, 0, 127, 0.08), transparent 25%);
+    radial-gradient(circle at 15% 50%, rgba(138, 43, 226, 0.03), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(255, 0, 127, 0.03), transparent 30%);
   background-attachment: fixed;
 }
 
@@ -81,7 +82,7 @@ a {
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-lg);
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
 }
 
 .gradient-text {
@@ -101,6 +102,42 @@ a {
   animation: fadeIn var(--transition-smooth) forwards;
 }
 
+/* Advanced Loading Animation */
+@keyframes think-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes think-pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.4); }
+  70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(138, 43, 226, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(138, 43, 226, 0); }
+}
+
+.thinking-icon {
+  font-size: 3rem;
+  display: inline-block;
+  animation: think-bounce 2s infinite ease-in-out;
+  background: var(--panel-bg);
+  padding: 1rem;
+  border-radius: 50%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  margin-bottom: 1rem;
+}
+
+.thinking-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  animation: think-pulse 2s infinite;
+  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--panel-border);
+}
+
 /* Skeletons */
 @keyframes pulse {
   0% { opacity: 0.6; }
@@ -109,7 +146,7 @@ a {
 }
 
 .skeleton {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: var(--radius-sm);
   animation: pulse 1.5s infinite ease-in-out;
 }
@@ -124,6 +161,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
 }
 
 .input-label {
@@ -138,7 +176,7 @@ a {
 
 .input-field {
   width: 100%;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
@@ -146,15 +184,29 @@ a {
   font-size: 1rem;
   transition: all var(--transition-fast);
   outline: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .input-field:focus {
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px var(--accent-glow);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .input-field::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.input-error {
+  border-color: #ff4757 !important;
+  box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.2) !important;
+}
+
+.error-message {
+  color: #ff4757;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  position: absolute;
+  bottom: -1.25rem;
 }
 
 /* Range Slider */
@@ -166,7 +218,7 @@ a {
   -webkit-appearance: none;
   width: 100%;
   height: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 3px;
   outline: none;
 }
@@ -212,6 +264,7 @@ select.input-field {
   gap: 0.5rem;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);
 }
 
 .btn-primary::after {
@@ -228,7 +281,7 @@ select.input-field {
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--accent-glow);
+  box-shadow: 0 8px 24px rgba(138, 43, 226, 0.3);
 }
 
 .btn-primary:hover:not(:disabled)::after {
@@ -249,7 +302,7 @@ select.input-field {
 .btn-secondary {
   background: transparent;
   color: var(--text-primary);
-  border: 1px solid var(--panel-border);
+  border: 1px solid rgba(0,0,0,0.1);
   border-radius: var(--radius-md);
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
@@ -259,8 +312,8 @@ select.input-field {
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Layout Utilities */
@@ -289,7 +342,7 @@ select.input-field {
 .accordion-header {
   cursor: pointer;
   padding: 1.5rem;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.02);
   border-radius: var(--radius-md);
   display: flex;
   justify-content: space-between;
@@ -299,7 +352,7 @@ select.input-field {
 }
 
 .accordion-header:hover {
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.04);
   border-color: var(--panel-border);
 }
 
@@ -319,11 +372,12 @@ select.input-field {
 
 /* Slots */
 .slot-card {
-  background: rgba(255,255,255,0.02);
+  background: rgba(255,255,255,0.8);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-md);
   padding: 1.5rem;
   margin-top: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
 .slot-header {
@@ -331,7 +385,7 @@ select.input-field {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
   padding-bottom: 1rem;
 }
 
@@ -345,37 +399,59 @@ select.input-field {
   letter-spacing: 0.05em;
 }
 
-.badge-morning { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-.badge-afternoon { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
-.badge-evening { background: rgba(138, 43, 226, 0.2); color: #b388ff; }
+.badge-morning { background: rgba(255, 193, 7, 0.15); color: #b28600; }
+.badge-afternoon { background: rgba(33, 150, 243, 0.1); color: #1565c0; }
+.badge-evening { background: rgba(138, 43, 226, 0.1); color: #6200ea; }
 
 .pro-tip {
   margin-top: 1rem;
   padding: 1rem;
-  background: rgba(255, 0, 127, 0.05);
+  background: rgba(255, 0, 127, 0.03);
   border-left: 3px solid #ff007f;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-size: 0.9rem;
 }
 
 .local-secret {
-  background: linear-gradient(90deg, rgba(138, 43, 226, 0.1) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgba(138, 43, 226, 0.05) 0%, transparent 100%);
   padding: 1.5rem;
   border-radius: var(--radius-md);
   margin-top: 1.5rem;
   border-left: 4px solid var(--accent-color);
 }
 
-/* Loading Spinner */
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(255,255,255,0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s ease-in-out infinite;
+/* Route Cards */
+.route-card {
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.route-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  border-color: rgba(138, 43, 226, 0.3);
+}
+
+/* Hotel Ranges */
+.hotel-ranges {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hotel-range-card {
+  flex: 1;
+  min-width: 150px;
+  background: rgba(0,0,0,0.02);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.04);
 }

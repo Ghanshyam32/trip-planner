@@ -6,9 +6,9 @@ const ai = new GoogleGenAI({});
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { source, destination, startDate, endDate, budget, travelerType, vibe, pace } = body;
+    const { source, destination, startDate, endDate, budget, travelerType, vibe, pace, transport } = body;
 
-    if (!source || !destination || !startDate || !endDate || !budget || !travelerType || !vibe || !pace) {
+    if (!source || !destination || !startDate || !endDate || !budget || !travelerType || !vibe || !pace || !transport) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -22,10 +22,11 @@ export async function POST(req: Request) {
       - From: ${source}
       - To: ${destination}
       - Dates: ${startDate} to ${endDate} (${days} days)
-      - Traveler Type: ${travelerType} (Keep this in mind for all recommendations. E.g., Family gets kid-friendly, Solo gets budget/social, Couple gets romantic)
-      - Budget: ₹${budget} INR (Ensure total cost breakdown accurately reflects this budget)
+      - Traveler Type: ${travelerType}
+      - Budget: ₹${budget} INR
       - Preferred Vibe: ${vibe}
-      - Pace Preference: ${pace} (If Relaxed, fewer activities. If Packed, full days.)
+      - Pace Preference: ${pace}
+      - Transport Preference: ${transport}
 
       Return the response ONLY as a valid JSON object with the EXACT following structure. Do not include markdown code blocks or any other text.
       {
@@ -34,30 +35,35 @@ export async function POST(req: Request) {
             "day": 1,
             "theme": "Brief theme of the day",
             "localSecret": "One highly specific local secret or hidden gem for the day that tourists miss",
+            "hotelRanges": {
+              "budget": "₹X - ₹Y",
+              "midRange": "₹X - ₹Y",
+              "luxury": "₹X - ₹Y"
+            },
             "activities": [
               { 
                 "time": "Morning", 
                 "name": "Activity Name",
-                "description": "Activity details including why it fits the traveler type and vibe",
+                "description": "Activity details",
                 "estimatedCostINR": 500,
                 "duration": "2 hours",
-                "proTip": "A useful pro tip for this specific activity"
+                "proTip": "A useful pro tip"
               },
               { 
                 "time": "Afternoon", 
                 "name": "Activity Name",
-                "description": "Activity details including why it fits the traveler type and vibe",
+                "description": "Activity details",
                 "estimatedCostINR": 1000,
                 "duration": "3 hours",
-                "proTip": "A useful pro tip for this specific activity"
+                "proTip": "A useful pro tip"
               },
               { 
                 "time": "Evening", 
                 "name": "Activity Name",
-                "description": "Activity details including why it fits the traveler type and vibe",
+                "description": "Activity details",
                 "estimatedCostINR": 1500,
                 "duration": "2.5 hours",
-                "proTip": "A useful pro tip for this specific activity"
+                "proTip": "A useful pro tip"
               }
             ]
           }
@@ -67,15 +73,19 @@ export async function POST(req: Request) {
           "stay": 0,
           "food": 0,
           "activities": 0,
-          "totalEstimated": 0
+          "totalEstimated": 0,
+          "transportEstimates": {
+             "flight": "₹X - ₹Y",
+             "trainBus": "₹X - ₹Y (Leave empty or null if destination is international and impossible to reach by train/bus)"
+          }
         },
         "summary": "A 2-3 sentence engaging summary of the trip highlighting why it perfectly matches the traveler type, vibe, and budget."
       }
       
       CRITICAL INSTRUCTIONS:
-      - Every single day must have exactly one "Morning", one "Afternoon", and one "Evening" activity slot.
-      - Make sure "hidden gems" are prioritized over standard tourist traps.
       - Ensure the "totalEstimated" closely aligns with the budget of ₹${budget} INR.
+      - Take the transport preference (${transport}) into account when calculating the "transport" cost in the breakdown.
+      - If the destination is international from the source, only provide flight estimates.
     `;
 
     const response = await ai.models.generateContent({

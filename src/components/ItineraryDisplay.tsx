@@ -24,27 +24,30 @@ export default function ItineraryDisplay({ plan, isLoading }: ItineraryDisplayPr
   };
 
   if (isLoading) {
-    return (
-      <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
-        <div className="skeleton skeleton-title"></div>
-        <div className="skeleton skeleton-text" style={{ width: '80%', marginBottom: '2rem' }}></div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="glass-panel" style={{ padding: '1.5rem 2rem' }}>
-              <div className="skeleton skeleton-text" style={{ width: '30%', marginBottom: '1rem' }}></div>
-              <div className="skeleton skeleton-box"></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return null; // Handled by page.tsx now
   }
 
   if (!plan) return null;
 
+  // Assuming the destination is somewhat parseable from the plan context or we could pass it in.
+  // We'll extract destination from the summary or just rely on a generic travel image if not passed directly.
+  // Actually, we can just use the destination from the page context, but we don't have it directly here.
+  // For now, let's just use "travel" as the keyword for the hero image to ensure it works.
+  const imageUrl = `https://loremflickr.com/800/400/travel,city/all`;
+
   return (
     <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+      <div style={{
+        width: '100%',
+        height: '250px',
+        backgroundImage: `url(${imageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        borderRadius: 'var(--radius-lg)',
+        marginBottom: '2rem',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+      }} />
+
       <h2 className="gradient-text">Your Itinerary</h2>
       <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>{plan.summary}</p>
 
@@ -67,6 +70,24 @@ export default function ItineraryDisplay({ plan, isLoading }: ItineraryDisplayPr
             <div className={`accordion-content ${expandedDay === dayPlan.day ? 'expanded' : ''}`}>
               <div className="accordion-inner">
                 <div style={{ padding: '1.5rem 2rem' }}>
+                  
+                  {/* Hotel Ranges */}
+                  {dayPlan.hotelRanges && (
+                    <div className="hotel-ranges">
+                      <div className="hotel-range-card">
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Budget Stay</div>
+                        <div style={{ fontWeight: 600 }}>{dayPlan.hotelRanges.budget} / night</div>
+                      </div>
+                      <div className="hotel-range-card">
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Mid-Range Stay</div>
+                        <div style={{ fontWeight: 600 }}>{dayPlan.hotelRanges.midRange} / night</div>
+                      </div>
+                      <div className="hotel-range-card">
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Luxury Stay</div>
+                        <div style={{ fontWeight: 600 }}>{dayPlan.hotelRanges.luxury} / night</div>
+                      </div>
+                    </div>
+                  )}
                   
                   {dayPlan.localSecret && (
                     <div className="local-secret">

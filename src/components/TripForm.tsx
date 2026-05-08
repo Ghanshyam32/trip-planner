@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TripRequest } from '@/types';
 
 interface TripFormProps {
   onSubmit: (data: TripRequest) => void;
   isLoading: boolean;
+  initialValues?: Partial<TripRequest>;
 }
 
-export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
+export default function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) {
   // Get tomorrow's date for default start
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -27,8 +28,18 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
     budget: 50000,
     travelerType: 'Solo',
     vibe: 'Adventure',
-    pace: 'Balanced'
+    pace: 'Balanced',
+    transport: 'Any',
+    ...initialValues
   });
+
+  const [budgetWarning, setBudgetWarning] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialValues) {
+      setFormData(prev => ({ ...prev, ...initialValues }));
+    }
+  }, [initialValues]);
 
   const formatINR = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -44,10 +55,40 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
       ...prev,
       [name]: name === 'budget' ? Number(value) : value
     }));
+    
+    if (name === 'budget' || name === 'destination' || name === 'source') {
+       setBudgetWarning(null); // Clear warning on change
+    }
+  };
+
+  const checkBudgetValidation = () => {
+    // Very basic heuristic for demo purposes
+    const dest = formData.destination.toLowerCase();
+    const source = formData.source.toLowerCase();
+    const internationalKeywords = ['dubai', 'paris', 'bali', 'singapore', 'london', 'new york', 'tokyo'];
+    
+    const isInternational = internationalKeywords.some(kw => dest.includes(kw) || source.includes(kw));
+    
+    if (isInternational && formData.budget < 40000) {
+      return "This budget may be too low for this international destination. Minimum recommended: ₹40,000.";
+    }
+    
+    if (!isInternational && formData.budget < 5000) {
+      return "This budget may be too low. Minimum recommended: ₹10,000.";
+    }
+    
+    return null;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const warning = checkBudgetValidation();
+    if (warning && !budgetWarning) {
+      setBudgetWarning(warning);
+      return; // Stop submission to show warning
+    }
+
     onSubmit(formData);
   };
 
@@ -121,7 +162,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
           <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{formatINR(formData.budget)}</span>
         </label>
         <input
-          className="range-slider"
+          className={`range-slider ${budgetWarning ? 'input-error' : ''}`}
           type="range"
           id="budget"
           name="budget"
@@ -136,10 +177,15 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
           <span>₹5k</span>
           <span>₹2L+</span>
         </div>
+        {budgetWarning && (
+          <div style={{ color: '#ff4757', fontSize: '0.9rem', marginTop: '1rem', padding: '0.5rem', background: 'rgba(255, 71, 87, 0.1)', borderRadius: 'var(--radius-sm)' }}>
+            ⚠️ {budgetWarning} Click 'Plan My Trip' again to proceed anyway.
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-3">
-        <div className="input-group">
+      <div className="grid grid-2">
+         <div className="input-group">
           <label className="input-label" htmlFor="travelerType">Traveler Type</label>
           <select
             className="input-field"
@@ -155,7 +201,24 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
             <option value="Friends Group">Friends Group</option>
           </select>
         </div>
+        <div className="input-group">
+          <label className="input-label" htmlFor="transport">Transport Preference</label>
+          <select
+            className="input-field"
+            id="transport"
+            name="transport"
+            value={formData.transport}
+            onChange={handleChange}
+            required
+          >
+            <option value="Any">Any (Show all options)</option>
+            <option value="Flight only">Flight only</option>
+            <option value="Train/Bus only">Train/Bus only</option>
+          </select>
+        </div>
+      </div>
 
+      <div className="grid grid-2">
         <div className="input-group">
           <label className="input-label" htmlFor="vibe">Travel Vibe</label>
           <select
@@ -195,14 +258,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
 
       <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
         <button type="submit" className="btn-primary" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <span className="spinner"></span>
-              Generating Itinerary...
-            </>
-          ) : (
-            'Plan My Trip'
-          )}
+          {isLoading ? 'Generating...' : (budgetWarning ? 'Proceed Anyway' : 'Plan My Trip')}
         </button>
       </div>
     </form>
