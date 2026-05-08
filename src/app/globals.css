@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   /* LIGHT THEME VARIABLES */
   --bg-color: #fdfdfc;
@@ -39,6 +43,7 @@ body {
     radial-gradient(circle at 15% 50%, rgba(138, 43, 226, 0.03), transparent 30%),
     radial-gradient(circle at 85% 30%, rgba(255, 0, 127, 0.03), transparent 30%);
   background-attachment: fixed;
+  padding-top: 80px; /* Space for sticky navbar */
 }
 
 /* Typography */
@@ -72,6 +77,104 @@ input, select, button {
 a {
   color: var(--text-primary);
   text-decoration: none;
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: rgba(253, 253, 252, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  border-bottom: 1px solid var(--panel-border);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-logo {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--accent-color);
+}
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: white;
+  border-left: 4px solid #2ecc71;
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  z-index: 1100;
+}
+
+/* Sticky Top Bar (Summary) */
+.sticky-summary {
+  position: fixed;
+  top: 80px; /* Below navbar */
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 100;
+  border-bottom: 1px solid var(--panel-border);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transform: translateY(-100%);
+  transition: transform var(--transition-smooth);
+}
+
+.sticky-summary.visible {
+  transform: translateY(0);
+}
+
+.sticky-details {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  font-weight: 500;
 }
 
 /* Premium UI Utilities */
@@ -165,11 +268,9 @@ a {
 }
 
 .input-label {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--text-primary);
   display: flex;
   justify-content: space-between;
 }
@@ -199,14 +300,6 @@ a {
 .input-error {
   border-color: #ff4757 !important;
   box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.2) !important;
-}
-
-.error-message {
-  color: #ff4757;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
-  position: absolute;
-  bottom: -1.25rem;
 }
 
 /* Range Slider */
@@ -334,8 +427,11 @@ select.input-field {
 }
 
 @media (max-width: 767px) {
+  .navbar-links { display: none; } /* Mobile menu needed for production, hiding for now */
   .container { padding: 1rem; }
   .glass-panel { padding: 1.5rem; }
+  .sticky-details { display: none; } 
+  .toast { left: 1rem; right: 1rem; bottom: 1rem; width: auto; }
 }
 
 /* Accordion / Expandable Cards */
@@ -420,22 +516,84 @@ select.input-field {
   border-left: 4px solid var(--accent-color);
 }
 
-/* Route Cards */
-.route-card {
-  background: rgba(255,255,255,0.9);
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-align: left;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+/* Fun Facts */
+.fun-facts-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
 }
 
-.route-card:hover {
+.fun-fact-pill {
+  background: white;
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+/* Weather Widget */
+.weather-widget {
+  display: flex;
+  gap: 1rem;
+  background: rgba(0,0,0,0.02);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Image Cards (Routes & Alternative Suggestions) */
+.image-card {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: all var(--transition-smooth);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Fallback gradient */
+}
+
+.image-card-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 0;
+}
+
+.image-card-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%);
+  z-index: 1;
+}
+
+.image-card-content {
+  position: relative;
+  z-index: 2;
+  padding: 1.5rem;
+  color: white;
+}
+
+.image-card:hover .image-card-bg {
+  transform: scale(1.1);
+}
+
+.image-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  border-color: rgba(138, 43, 226, 0.3);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
 }
 
 /* Hotel Ranges */
@@ -454,4 +612,51 @@ select.input-field {
   border-radius: var(--radius-sm);
   text-align: center;
   border: 1px solid rgba(0,0,0,0.04);
+  position: relative;
+}
+
+.hotel-range-card.highlighted {
+  background: rgba(46, 204, 113, 0.05);
+  border-color: rgba(46, 204, 113, 0.3);
+}
+
+.hotel-recommended-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2ecc71;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+/* Checkbox specific styling */
+.custom-checkbox {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 4px;
+  border: 2px solid var(--accent-color);
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  transition: background var(--transition-fast);
+}
+
+.custom-checkbox:checked {
+  background: var(--accent-color);
+}
+
+.custom-checkbox:checked::after {
+  content: '✓';
+  color: white;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  font-weight: bold;
 }

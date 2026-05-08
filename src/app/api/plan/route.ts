@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { NextResponse } from 'next/server';
 
-const ai = new GoogleGenAI({});
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: Request) {
   try {
@@ -79,7 +79,12 @@ export async function POST(req: Request) {
              "trainBus": "₹X - ₹Y (Leave empty or null if destination is international and impossible to reach by train/bus)"
           }
         },
-        "summary": "A 2-3 sentence engaging summary of the trip highlighting why it perfectly matches the traveler type, vibe, and budget."
+        "summary": "A 2-3 sentence engaging summary of the trip highlighting why it perfectly matches the traveler type, vibe, and budget.",
+        "funFacts": [
+          "Fun fact 1 about the destination",
+          "Fun fact 2 about the destination",
+          "Fun fact 3 about the destination"
+        ]
       }
       
       CRITICAL INSTRUCTIONS:

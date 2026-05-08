@@ -1,5 +1,5 @@
 export interface Activity {
-  time: string; // "Morning", "Afternoon", "Evening"
+  time: string;
   name: string;
   description: string;
   estimatedCostINR: number;
@@ -39,6 +39,7 @@ export interface TripPlan {
   itinerary: DayItinerary[];
   costBreakdown: CostBreakdown;
   summary: string;
+  funFacts: string[];
 }
 
 export interface TripRequest {
@@ -54,9 +55,25 @@ export interface TripRequest {
 }
 
 export interface SimilarTrip {
-  type: string; // "Stretch your budget" | "Similar vibe"
+  type: string;
   title: string;
   destination: string;
   description: string;
   budget: number;
+}
+
+export interface PackingCategory {
+  category: string;
+  items: string[];
+}
+
+export interface PackingList {
+  categories: PackingCategory[];
+}
+
+export interface WeatherData {
+  time: string[];
+  temperature_2m_max: number[];
+  temperature_2m_min: number[];
+  precipitation_probability_mean: number[];
 }

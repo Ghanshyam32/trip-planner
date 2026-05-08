@@ -17,26 +17,53 @@ export default function PopularRoutes({ onSelect }: PopularRoutesProps) {
     { source: 'Chennai', destination: 'Singapore', tagline: 'Urban Exploration', vibe: 'Mixed', pace: 'Packed' }
   ];
 
+  const handleSelect = (route: any) => {
+    // Generate dates: Today to Today + 5 days
+    const today = new Date();
+    const future = new Date(today);
+    future.setDate(today.getDate() + 5);
+
+    const start = today.toISOString().split('T')[0];
+    const end = future.toISOString().split('T')[0];
+
+    onSelect({
+      source: route.source,
+      destination: route.destination,
+      startDate: start,
+      endDate: end,
+      budget: 80000,
+      travelerType: 'Solo',
+      vibe: route.vibe,
+      pace: route.pace,
+      transport: 'Flight only'
+    });
+  };
+
   return (
     <div style={{ marginBottom: '3rem' }}>
-      <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>Popular Routes</h3>
-      <div className="grid grid-3" style={{ gap: '1rem' }}>
+      <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>🌍 Explore Popular Routes</h3>
+      <div className="grid grid-3" style={{ gap: '1.5rem' }}>
         {routes.map((route, idx) => (
           <div 
             key={idx} 
-            className="route-card"
-            onClick={() => onSelect({
-              source: route.source,
-              destination: route.destination,
-              vibe: route.vibe,
-              pace: route.pace
-            })}
+            className="image-card"
+            onClick={() => handleSelect(route)}
           >
-            <div style={{ fontWeight: 600, fontSize: '1.1rem', marginBottom: '0.25rem', color: 'var(--accent-color)' }}>
-              {route.source} ✈️ {route.destination}
-            </div>
-            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-              {route.tagline}
+            <div 
+              className="image-card-bg"
+              role="img"
+              aria-label={`Photo of ${route.destination}`}
+              style={{ backgroundImage: `url(https://picsum.photos/seed/${route.destination.toLowerCase()}/400/300)` }}
+            />
+            <div className="image-card-overlay" />
+            
+            <div className="image-card-content">
+              <div style={{ fontWeight: 600, fontSize: '1.2rem', marginBottom: '0.25rem', color: 'white' }}>
+                {route.source} ✈️ {route.destination}
+              </div>
+              <div style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.8)' }}>
+                {route.tagline}
+              </div>
             </div>
           </div>
         ))}

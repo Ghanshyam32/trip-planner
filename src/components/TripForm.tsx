@@ -10,14 +10,13 @@ interface TripFormProps {
 }
 
 export default function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) {
-  // Get tomorrow's date for default start
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const defaultStart = tomorrow.toISOString().split('T')[0];
+  // Get today's date for default start
+  const today = new Date();
+  const defaultStart = today.toISOString().split('T')[0];
   
-  // Get 3 days after tomorrow for default end
-  const future = new Date(tomorrow);
-  future.setDate(future.getDate() + 3);
+  // Get 5 days after today for default end
+  const future = new Date(today);
+  future.setDate(future.getDate() + 5);
   const defaultEnd = future.toISOString().split('T')[0];
 
   const [formData, setFormData] = useState<TripRequest>({
@@ -62,7 +61,6 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
   };
 
   const checkBudgetValidation = () => {
-    // Very basic heuristic for demo purposes
     const dest = formData.destination.toLowerCase();
     const source = formData.source.toLowerCase();
     const internationalKeywords = ['dubai', 'paris', 'bali', 'singapore', 'london', 'new york', 'tokyo'];
@@ -86,7 +84,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
     const warning = checkBudgetValidation();
     if (warning && !budgetWarning) {
       setBudgetWarning(warning);
-      return; // Stop submission to show warning
+      return; 
     }
 
     onSubmit(formData);
@@ -98,7 +96,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
       
       <div className="grid grid-2">
         <div className="input-group">
-          <label className="input-label" htmlFor="source">From</label>
+          <label className="input-label" htmlFor="source">✈️ From</label>
           <input
             className="input-field"
             type="text"
@@ -112,7 +110,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
         </div>
 
         <div className="input-group">
-          <label className="input-label" htmlFor="destination">To</label>
+          <label className="input-label" htmlFor="destination">📍 To</label>
           <input
             className="input-field"
             type="text"
@@ -128,7 +126,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
 
       <div className="grid grid-2">
         <div className="input-group">
-          <label className="input-label" htmlFor="startDate">Start Date</label>
+          <label className="input-label" htmlFor="startDate">📅 Start Date</label>
           <input
             className="input-field"
             type="date"
@@ -142,7 +140,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
         </div>
 
         <div className="input-group">
-          <label className="input-label" htmlFor="endDate">End Date</label>
+          <label className="input-label" htmlFor="endDate">📅 End Date</label>
           <input
             className="input-field"
             type="date"
@@ -158,7 +156,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
 
       <div className="input-group slider-container">
         <label className="input-label" htmlFor="budget">
-          <span>Budget Range</span>
+          <span>💰 Budget Range</span>
           <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{formatINR(formData.budget)}</span>
         </label>
         <input
@@ -186,7 +184,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
 
       <div className="grid grid-2">
          <div className="input-group">
-          <label className="input-label" htmlFor="travelerType">Traveler Type</label>
+          <label className="input-label" htmlFor="travelerType">👥 Traveler Type</label>
           <select
             className="input-field"
             id="travelerType"
@@ -202,7 +200,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
           </select>
         </div>
         <div className="input-group">
-          <label className="input-label" htmlFor="transport">Transport Preference</label>
+          <label className="input-label" htmlFor="transport">🚉 Transport Preference</label>
           <select
             className="input-field"
             id="transport"
@@ -220,7 +218,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
 
       <div className="grid grid-2">
         <div className="input-group">
-          <label className="input-label" htmlFor="vibe">Travel Vibe</label>
+          <label className="input-label" htmlFor="vibe">✨ Travel Vibe</label>
           <select
             className="input-field"
             id="vibe"
@@ -240,7 +238,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
         </div>
 
         <div className="input-group">
-          <label className="input-label" htmlFor="pace">Pace Preference</label>
+          <label className="input-label" htmlFor="pace">🏃 Pace Preference</label>
           <select
             className="input-field"
             id="pace"
@@ -257,7 +255,7 @@ export default function TripForm({ onSubmit, isLoading, initialValues }: TripFor
       </div>
 
       <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
-        <button type="submit" className="btn-primary" disabled={isLoading}>
+        <button type="submit" className="btn-primary" aria-label="Submit trip plan request" disabled={isLoading}>
           {isLoading ? 'Generating...' : (budgetWarning ? 'Proceed Anyway' : 'Plan My Trip')}
         </button>
       </div>
